@@ -30,6 +30,14 @@ export const getTechnicians = () => api.get('/admin/technicians');
 export const toggleTechnicianVerify = (id) => api.patch(`/admin/technicians/${id}/verify`);
 export const rejectTechnician = (id, reason) => api.patch(`/admin/technicians/${id}/reject`, { reason });
 
+// Live OTPs + users management + manual assign
+export const getLiveOtps = () => api.get('/admin/otps');
+export const getUsers = (params) => api.get('/admin/users', { params });
+export const updateUser = (id, data) => api.put(`/admin/users/${id}`, data);
+export const toggleBanUser = (id, reason) => api.patch(`/admin/users/${id}/toggle-ban`, { reason });
+export const deleteUser = (id) => api.delete(`/admin/users/${id}`);
+export const assignTechnician = (orderId, technicianId) => api.put(`/admin/orders/${orderId}/assign-technician`, { technicianId });
+
 // Payment methods management
 export const getAllPaymentMethods = () => api.get('/payment-methods/all');
 export const createPaymentMethod = (data) => api.post('/payment-methods', data);

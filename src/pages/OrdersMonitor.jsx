@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ClipboardList, Loader2, RefreshCw } from 'lucide-react';
-import { getOrders } from '../api/endpoints';
+import { getOrders, getTechnicians, assignTechnician } from '../api/endpoints';
 import StatusBadge from '../components/StatusBadge';
 
 const CATEGORY_LABELS = { solar: 'طاقة شمسية', electricity: 'كهرباء', ac: 'تكييف', plumbing: 'سباكة' };
@@ -20,6 +20,23 @@ export default function OrdersMonitor() {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
+  const [techs, setTechs] = useState([]);
+
+  useEffect(() => {
+    getTechnicians().then(({ data }) =>
+      setTechs((data.technicians || []).filter((t) => t.isVerified && t.technicianProfile?.isAvailable !== false))
+    ).catch(() => {});
+  }, []);
+
+  const handleAssign = async (orderId, technicianId) => {
+    if (!technicianId) return;
+    try {
+      const { data } = await assignTechnician(orderId, technicianId);
+      setOrders((prev) => prev.map((x) => (x._id === orderId ? { ...x, status: 'assigned', technicianId: { name: data.assigned?.name } } : x)));
+    } catch (err) {
+      alert(err.response?.data?.message || 'فشل الإسناد');
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -99,6 +116,14 @@ export default function OrdersMonitor() {
                         <p className="font-medium">{o.technicianId.name}</p>
                         <p className="text-xs text-slate-400" dir="ltr">{o.technicianId.phone}</p>
                       </>
+                    ) : ['searching_technician', 'payment_verifying'].includes(o.status) ? (
+                      <select defaultValue="" onChange={(e) => handleAssign(o._id, e.target.value)}
+                        className="text-xs border rounded-lg px-2 py-1.5 bg-purple-50 border-purple-200 max-w-36">
+                        <option value="" disabled>إسناد يدوي…</option>
+                        {techs.map((t) => (
+                          <option key={t._id} value={t._id}>{t.name}</option>
+                        ))}
+                      </select>
                     ) : <span className="text-xs text-slate-400">لم يُسند بعد</span>}
                   </td>
                   <td className="px-4 py-3 font-bold">{fmt(total)} ر.ي</td>

@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import PaymentsVerification from './pages/PaymentsVerification';
 import OrdersMonitor from './pages/OrdersMonitor';
 import Technicians from './pages/Technicians';
+import LiveOtps from './pages/LiveOtps';
+import UsersManagement from './pages/UsersManagement';
 import DailyPayouts from './pages/DailyPayouts';
 import PaymentMethods from './pages/PaymentMethods';
 
@@ -27,6 +29,8 @@ export default function App() {
         <Route path="/payments" element={<PaymentsVerification />} />
         <Route path="/orders" element={<OrdersMonitor />} />
         <Route path="/technicians" element={<Technicians />} />
+        <Route path="/otps" element={<LiveOtps />} />
+        <Route path="/users" element={<UsersManagement />} />
         <Route path="/payouts" element={<DailyPayouts />} />
         <Route path="/methods" element={<PaymentMethods />} />
       </Route>
