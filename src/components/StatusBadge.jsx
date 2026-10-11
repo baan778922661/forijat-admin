@@ -1,6 +1,7 @@
 const MAP = {
   pending_payment_proof: { label: 'بانتظار سند الدفع', cls: 'bg-amber-100 text-amber-700' },
   payment_verifying: { label: 'قيد مراجعة السند', cls: 'bg-blue-100 text-blue-700' },
+  searching_technician: { label: 'معتمد — بحث عن فني', cls: 'bg-purple-100 text-purple-700' },
   assigned: { label: 'تم إسناد فني', cls: 'bg-indigo-100 text-indigo-700' },
   in_progress: { label: 'قيد التنفيذ', cls: 'bg-cyan-100 text-cyan-700' },
   price_update_pending: { label: 'بانتظار موافقة أجر اليد', cls: 'bg-purple-100 text-purple-700' },
