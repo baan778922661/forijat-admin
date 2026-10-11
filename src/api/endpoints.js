@@ -28,6 +28,7 @@ export const rejectWithdrawal = (txId) => api.post(`/admin/withdrawals/${txId}/r
 export const getOrders = (status) => api.get('/admin/orders', { params: status ? { status } : {} });
 export const getTechnicians = () => api.get('/admin/technicians');
 export const toggleTechnicianVerify = (id) => api.patch(`/admin/technicians/${id}/verify`);
+export const rejectTechnician = (id, reason) => api.patch(`/admin/technicians/${id}/reject`, { reason });
 
 // Payment methods management
 export const getAllPaymentMethods = () => api.get('/payment-methods/all');

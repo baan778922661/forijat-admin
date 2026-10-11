@@ -32,8 +32,10 @@ export default function PaymentsVerification() {
     setBusyId(order._id);
     try {
       const { data } = await approvePayment(order._id);
-      flash(data.assigned ? `تم الاعتماد وإسناد الفني: ${data.assigned.name}` : 'تم اعتماد الدفع');
-      await load();
+      // تحديث تفاؤلي: إخراج الطلب من الطابور فوراً دون انتظار إعادة الجلب
+      setOrders((prev) => prev.filter((x) => x._id !== order._id));
+      flash(data.assigned ? `تم الاعتماد وإسناد الفني: ${data.assigned.name}` : 'تم اعتماد الدفع وإخراجه من الطابور ✓');
+      load(); // مزامنة خلفية تأكيدية
     } catch (err) {
       flash(err.response?.data?.message || 'فشل الاعتماد');
     } finally {
@@ -47,8 +49,9 @@ export default function PaymentsVerification() {
     setBusyId(order._id);
     try {
       await rejectPayment(order._id, reason);
+      setOrders((prev) => prev.filter((x) => x._id !== order._id));
       flash('تم رفض السند وإعادة الطلب للعميل');
-      await load();
+      load();
     } catch (err) {
       flash(err.response?.data?.message || 'فشل الرفض');
     } finally {
