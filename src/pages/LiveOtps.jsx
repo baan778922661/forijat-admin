@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Copy, KeyRound, Loader2, RefreshCw } from 'lucide-react';
+import { Copy, KeyRound, Loader2, MessageCircle, RefreshCw } from 'lucide-react';
 import { getLiveOtps } from '../api/endpoints';
 
-/** شاشة أكواد التحقق الحية — تتحدث تلقائياً كل 15 ثانية */
+/** شاشة أكواد التحقق الحية — تحديث كل 15 ثانية + زر واتساب مباشر برسالة معبأة */
 export default function LiveOtps() {
   const [otps, setOtps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +31,18 @@ export default function LiveOtps() {
     setTimeout(() => setCopied(''), 1500);
   };
 
+  const waLink = (o) => {
+    const name = o.userName || o.user?.name || 'عزيزنا المستخدم';
+    const text = encodeURIComponent(`مرحباً ${name}، رمز التحقق الخاص بك لمنصة فُرِجَت هو: ${o.code}`);
+    return `https://wa.me/967${o.phone}?text=${text}`;
+  };
+
   return (
     <div>
       <header className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-extrabold">أكواد التحقق الحية</h2>
-          <p className="text-sm text-slate-500 mt-1">أحدث طلبات OTP غير المنتهية — تتحدث تلقائياً كل 15 ثانية (قناة مؤقتة حتى ربط SMS)</p>
+          <p className="text-sm text-slate-500 mt-1">تتحدث كل 15 ثانية — أرسل الرمز للمستخدم بضغطة عبر زر واتساب الأخضر</p>
         </div>
         <button onClick={load} className="flex items-center gap-2 bg-white border rounded-xl px-4 py-2 text-sm font-medium hover:bg-slate-50">
           <RefreshCw size={15} /> تحديث
@@ -48,11 +54,11 @@ export default function LiveOtps() {
           <thead className="bg-slate-50 text-slate-500 text-xs">
             <tr>
               <th className="px-4 py-3 text-right font-bold">الهاتف</th>
-              <th className="px-4 py-3 text-right font-bold">الاسم / نوع الحساب</th>
+              <th className="px-4 py-3 text-right font-bold">الاسم / الصفة</th>
               <th className="px-4 py-3 text-right font-bold">الرمز</th>
               <th className="px-4 py-3 text-right font-bold">الغرض</th>
-              <th className="px-4 py-3 text-right font-bold">الوقت المتبقي</th>
-              <th className="px-4 py-3 text-right font-bold">نسخ</th>
+              <th className="px-4 py-3 text-right font-bold">المتبقي</th>
+              <th className="px-4 py-3 text-right font-bold">إجراءات</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -73,8 +79,8 @@ export default function LiveOtps() {
                 <tr key={o._id} className="hover:bg-slate-50/60">
                   <td className="px-4 py-3 font-bold" dir="ltr">{o.phone}</td>
                   <td className="px-4 py-3">
-                    <p className="font-medium">{o.user?.name || '—'}</p>
-                    <p className="text-xs text-slate-400">{o.user?.role === 'technician' ? 'فني' : o.user?.role === 'client' ? 'عميل' : 'غير مسجل'}</p>
+                    <p className="font-medium">{o.userName || o.user?.name || '—'}</p>
+                    <p className="text-xs text-slate-400">{o.role === 'technician' ? 'فني' : o.role === 'client' ? 'عميل' : 'غير مسجل'}</p>
                   </td>
                   <td className="px-4 py-3">
                     <span className="font-mono font-extrabold text-lg tracking-widest text-brand-700" dir="ltr">{o.code}</span>
@@ -84,10 +90,16 @@ export default function LiveOtps() {
                     <span className={`text-xs font-bold ${remain < 120 ? 'text-red-600' : 'text-slate-600'}`} dir="ltr">{mm}:{ss}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <button onClick={() => copy(o.code)}
-                      className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg">
-                      <Copy size={12} /> {copied === o.code ? 'تم ✓' : 'نسخ'}
-                    </button>
+                    <div className="flex gap-1.5">
+                      <button onClick={() => copy(o.code)}
+                        className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg">
+                        <Copy size={12} /> {copied === o.code ? 'تم ✓' : 'نسخ'}
+                      </button>
+                      <a href={waLink(o)} target="_blank" rel="noreferrer"
+                        className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                        <MessageCircle size={12} /> واتساب
+                      </a>
+                    </div>
                   </td>
                 </tr>
               );

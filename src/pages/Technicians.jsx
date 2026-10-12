@@ -90,6 +90,9 @@ export default function Technicians() {
                   <div>
                     <h3 className="font-extrabold">{t.name}</h3>
                     <p className="text-xs text-slate-400" dir="ltr">{t.phone}</p>
+                  {(t.city || t.district) && (
+                    <p className="text-xs text-slate-500 mt-0.5">📍 {[t.city, t.district].filter(Boolean).join(' — ')}</p>
+                  )}
                   </div>
                   <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
                     vs === 'verified' ? 'bg-emerald-100 text-emerald-700'
@@ -109,15 +112,20 @@ export default function Technicians() {
 
                 {/* معاينة الوثائق قبل التوثيق */}
                 <div className="flex gap-2 mb-3">
-                  {tp.idCardUrl ? (
-                    <button onClick={() => setDoc({ url: tp.idCardUrl, title: `هوية ${t.name}` })}
+                  {(tp.idFrontImage || tp.idCardUrl) ? (
+                    <button onClick={() => setDoc({ url: tp.idFrontImage || tp.idCardUrl, title: `هوية (أمام) — ${t.name}` })}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-xs font-bold py-2 rounded-lg">
-                      <IdCard size={14} /> <Eye size={12} /> الهوية
+                      <IdCard size={14} /> <Eye size={12} /> أمام
                     </button>
                   ) : (
                     <span className="flex-1 text-center text-[10px] text-slate-400 py-2 bg-slate-50 rounded-lg">لا هوية</span>
                   )}
-                  {tp.certificateUrl ? (
+                  {tp.idBackImage ? (
+                    <button onClick={() => setDoc({ url: tp.idBackImage, title: `هوية (خلف) — ${t.name}` })}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-xs font-bold py-2 rounded-lg">
+                      <IdCard size={14} /> <Eye size={12} /> خلف
+                    </button>
+                  ) : tp.certificateUrl ? (
                     <button onClick={() => setDoc({ url: tp.certificateUrl, title: `شهادة ${t.name}` })}
                       className="flex-1 flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-xs font-bold py-2 rounded-lg">
                       <FileBadge size={14} /> <Eye size={12} /> الشهادة
@@ -127,6 +135,11 @@ export default function Technicians() {
                   )}
                 </div>
 
+                {(tp.ratingAverage ?? 5) < 3 && (tp.ratingCount ?? 0) >= 1 && (
+                  <div className="mb-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl px-3 py-2">
+                    ⚠️ تقييم منخفض ({(tp.ratingAverage ?? 0).toFixed(1)}) — راجع أداء الفني قبل استمرار توثيقه
+                  </div>
+                )}
                 <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
                   <span className="flex items-center gap-1">
                     <Star size={13} className="text-amber-400" />
