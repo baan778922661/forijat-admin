@@ -16,6 +16,13 @@ const STATUS_FILTERS = [
 ];
 const fmt = (n) => (n ?? 0).toLocaleString('ar-YE');
 
+const setWarranty = async (id) => {
+  const days = window.prompt('مدة الضمان بالأيام (مثال: 14، 30، 90):', '14');
+  if (!days) return;
+  await api.put(`/admin/orders/${id}/warranty`, { days: parseInt(days) });
+  alert('تم اعتماد مدة الضمان ✓');
+};
+
 export default function OrdersMonitor() {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState('');
