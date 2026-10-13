@@ -7,6 +7,8 @@ const links = [
   { to: '/orders', label: 'مراقبة الطلبات', icon: ClipboardList },
   { to: '/technicians', label: 'إدارة الفنيين', icon: UserCheck },
   { to: '/otps', label: 'أكواد التحقق الحية', icon: KeyRound },
+          { to: '/kyc', label: '🪪 توثيق الفنيين' },
+          { to: '/settings', label: '⚙️ إعدادات الدعم' },
   { to: '/users', label: 'إدارة الحسابات', icon: Users },
   { to: '/payouts', label: 'السحوبات اليومية', icon: Banknote },
   { to: '/methods', label: 'قنوات الدفع', icon: CreditCard },
