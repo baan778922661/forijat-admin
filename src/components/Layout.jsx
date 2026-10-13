@@ -1,5 +1,17 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { BadgeCheck, Banknote, ClipboardList, CreditCard, KeyRound, LogOut, UserCheck, Users, Wrench } from 'lucide-react';
+import { 
+  BadgeCheck, 
+  Banknote, 
+  ClipboardList, 
+  CreditCard, 
+  KeyRound, 
+  LogOut, 
+  Settings, 
+  ShieldCheck, 
+  UserCheck, 
+  Users, 
+  Wrench 
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const links = [
@@ -7,8 +19,8 @@ const links = [
   { to: '/orders', label: 'مراقبة الطلبات', icon: ClipboardList },
   { to: '/technicians', label: 'إدارة الفنيين', icon: UserCheck },
   { to: '/otps', label: 'أكواد التحقق الحية', icon: KeyRound },
-          { to: '/kyc', label: '🪪 توثيق الفنيين' },
-          { to: '/settings', label: '⚙️ إعدادات الدعم' },
+  { to: '/kyc', label: 'توثيق الفنيين', icon: ShieldCheck },
+  { to: '/settings', label: 'إعدادات الدعم', icon: Settings },
   { to: '/users', label: 'إدارة الحسابات', icon: Users },
   { to: '/payouts', label: 'السحوبات اليومية', icon: Banknote },
   { to: '/methods', label: 'قنوات الدفع', icon: CreditCard },
@@ -43,7 +55,7 @@ export default function Layout() {
                 }`
               }
             >
-              <Icon size={18} />
+              {Icon && <Icon size={18} />}
               {label}
             </NavLink>
           ))}
