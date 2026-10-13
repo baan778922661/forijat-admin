@@ -25,17 +25,18 @@ export default function LiveOtps() {
     return () => { clearInterval(t1); clearInterval(t2); };
   }, [load]);
 
-  const copy = (code) => {
-    navigator.clipboard?.writeText(code);
-    setCopied(code);
+  const buildMessage = (o) => {
+    const name = o.userName || o.user?.name || 'عزيزنا المستخدم';
+    return `مرحباً بك في منصة فُرِجَت. رمز التحقق الخاص بك لتفعيل الحساب هو: ${o.code}. يرجى عدم مشاركة هذا الرمز مع أي شخص حفاظاً على أمان حسابك.`;
+  };
+
+  const copyMessage = (o) => {
+    navigator.clipboard?.writeText(buildMessage(o));
+    setCopied(o._id);
     setTimeout(() => setCopied(''), 1500);
   };
 
-  const waLink = (o) => {
-    const name = o.userName || o.user?.name || 'عزيزنا المستخدم';
-    const text = encodeURIComponent(`مرحباً ${name}، رمز التحقق الخاص بك لمنصة فُرِجَت هو: ${o.code}`);
-    return `https://wa.me/967${o.phone}?text=${text}`;
-  };
+  const waLink = (o) => `https://wa.me/967${o.phone}?text=${encodeURIComponent(buildMessage(o))}`;
 
   return (
     <div>
@@ -57,6 +58,7 @@ export default function LiveOtps() {
               <th className="px-4 py-3 text-right font-bold">الاسم / الصفة</th>
               <th className="px-4 py-3 text-right font-bold">الرمز</th>
               <th className="px-4 py-3 text-right font-bold">الغرض</th>
+              <th className="px-4 py-3 text-right font-bold">القناة</th>
               <th className="px-4 py-3 text-right font-bold">المتبقي</th>
               <th className="px-4 py-3 text-right font-bold">إجراءات</th>
             </tr>
@@ -87,18 +89,26 @@ export default function LiveOtps() {
                   </td>
                   <td className="px-4 py-3 text-xs">{o.purpose === 'reset_password' ? 'استعادة كلمة مرور' : 'تسجيل'}</td>
                   <td className="px-4 py-3">
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${o.deliveryMethod === 'whatsapp' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}`}>
+                      {o.deliveryMethod === 'whatsapp' ? 'واتساب' : 'SMS'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
                     <span className={`text-xs font-bold ${remain < 120 ? 'text-red-600' : 'text-slate-600'}`} dir="ltr">{mm}:{ss}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1.5">
-                      <button onClick={() => copy(o.code)}
-                        className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg">
-                        <Copy size={12} /> {copied === o.code ? 'تم ✓' : 'نسخ'}
+                      <button onClick={() => copyMessage(o)}
+                        className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg"
+                        title="نسخ الرسالة الجاهزة كاملة (للـ SMS أو اللصق)">
+                        <Copy size={12} /> {copied === o._id ? 'تم ✓' : 'نسخ الرسالة'}
                       </button>
-                      <a href={waLink(o)} target="_blank" rel="noreferrer"
-                        className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
-                        <MessageCircle size={12} /> واتساب
-                      </a>
+                      {o.deliveryMethod === 'whatsapp' && (
+                        <a href={waLink(o)} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                          <MessageCircle size={12} /> إرسال واتساب
+                        </a>
+                      )}
                     </div>
                   </td>
                 </tr>

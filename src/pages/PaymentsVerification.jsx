@@ -105,9 +105,10 @@ export default function PaymentsVerification() {
                 لا توجد سندات بانتظار المراجعة ✓
               </td></tr>
             ) : orders.map((o) => {
-              const isLabor = !!o.financials?.laborPaymentProofUrl && !!o.technicianId;
+              // التمييز الصريح بمرحلة السند — الحقل القاطع pendingProofType
+              const isLabor = o.financials?.pendingProofType === 'labor';
               const proofUrl = isLabor ? o.financials.laborPaymentProofUrl : o.financials?.inspectionPaymentProofUrl;
-              const amount = isLabor ? o.financials.additionalLaborFee : o.financials?.inspectionFee;
+              const amount = isLabor ? (o.financials?.repairFee || o.financials?.additionalLaborFee) : o.financials?.inspectionFee;
               return (
                 <tr key={o._id} className="hover:bg-slate-50/60">
                   <td className="px-4 py-3">
@@ -116,9 +117,12 @@ export default function PaymentsVerification() {
                   </td>
                   <td className="px-4 py-3">{CATEGORY_LABELS[o.serviceCategory] || o.serviceCategory}</td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs font-bold ${isLabor ? 'text-purple-600' : 'text-blue-600'}`}>
-                      {isLabor ? 'أجر يد إضافي' : 'رسوم كشف'}
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${isLabor ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                      {isLabor ? '🔧 سند أجور يد إضافية / قطع غيار' : '🏷️ سند رسوم كشف أولية'}
                     </span>
+                    {isLabor && (o.financials?.repairFee > 0) && (
+                      <p className="text-[10px] text-slate-400 mt-1">مطالبة الفني: {o.financials.repairFee.toLocaleString('ar-YE')} ر.ي</p>
+                    )}
                   </td>
                   <td className="px-4 py-3 font-bold">{fmt(amount)} ر.ي</td>
                   <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
